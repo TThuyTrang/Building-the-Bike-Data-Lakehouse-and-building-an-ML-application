@@ -1,0 +1,72 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "application/vnd.databricks.v1+cell": {
+     "cellMetadata": {},
+     "inputWidgets": {},
+     "nuid": "222061c9-c40b-405d-87a0-f0c1ae66eda5",
+     "showTitle": false,
+     "tableResultSettingsMap": {},
+     "title": ""
+    }
+   },
+   "outputs": [],
+   "source": [
+    "%sql\n",
+    "\n",
+    "-- Create customer segments based on country (as a proxy for Enterprise/SMB/Consumer)\n",
+    "-- Using country as the primary segmentation dimension\n",
+    "SELECT \n",
+    "  CASE \n",
+    "    WHEN c.`country` = 'United States' THEN 'North America'\n",
+    "    WHEN c.`country` IN ('United Kingdom', 'France', 'Germany') THEN 'Europe'\n",
+    "    WHEN c.`country` IN ('Australia', 'Canada') THEN 'Pacific & Canada'\n",
+    "    WHEN c.`country` = 'n/a' THEN 'Unknown/Online'\n",
+    "    ELSE 'Other Markets'\n",
+    "  END AS customer_segment,\n",
+    "  SUM(f.`sales_amount`) AS total_sales_amount,\n",
+    "  COUNT(DISTINCT f.`order_number`) AS order_count,\n",
+    "  COUNT(DISTINCT f.`customer_key`) AS customer_count,\n",
+    "  ROUND(100.0 * SUM(f.`sales_amount`) / SUM(SUM(f.`sales_amount`)) OVER (), 2) AS sales_percentage\n",
+    "FROM `workspace`.`gold`.`fact_sales` f\n",
+    "JOIN `workspace`.`gold`.`dim_customers` c ON f.`customer_key` = c.`customer_key`\n",
+    "WHERE f.`order_date` IS NOT NULL\n",
+    "  AND c.`country` IS NOT NULL\n",
+    "GROUP BY \n",
+    "  CASE \n",
+    "    WHEN c.`country` = 'United States' THEN 'North America'\n",
+    "    WHEN c.`country` IN ('United Kingdom', 'France', 'Germany') THEN 'Europe'\n",
+    "    WHEN c.`country` IN ('Australia', 'Canada') THEN 'Pacific & Canada'\n",
+    "    WHEN c.`country` = 'n/a' THEN 'Unknown/Online'\n",
+    "    ELSE 'Other Markets'\n",
+    "  END\n",
+    "ORDER BY total_sales_amount DESC\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "application/vnd.databricks.v1+notebook": {
+   "computePreferences": null,
+   "dashboards": [],
+   "environmentMetadata": {
+    "base_environment": "",
+    "environment_version": "5"
+   },
+   "inputWidgetPreferences": null,
+   "language": "python",
+   "notebookMetadata": {
+    "pythonIndentUnit": 4
+   },
+   "notebookName": "New Notebook 2026-09-09 22:09:56",
+   "widgets": {}
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}

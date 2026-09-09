@@ -1,0 +1,60 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "application/vnd.databricks.v1+cell": {
+     "cellMetadata": {},
+     "inputWidgets": {},
+     "nuid": "e70f1f9e-a790-433e-ba54-9c328c8702ba",
+     "showTitle": false,
+     "tableResultSettingsMap": {},
+     "title": ""
+    }
+   },
+   "outputs": [],
+   "source": [
+    "%sql\n",
+    "\n",
+    "SELECT \n",
+    "  p.`product_name`,\n",
+    "  p.`category`,\n",
+    "  p.`subcategory`,\n",
+    "  SUM(f.`sales_amount`) AS total_revenue,\n",
+    "  SUM(f.`quantity`) AS total_quantity_sold,\n",
+    "  ROUND(SUM(f.`sales_amount`) / SUM(f.`quantity`), 2) AS avg_price_per_unit,\n",
+    "  COUNT(DISTINCT f.`order_number`) AS order_count\n",
+    "FROM `workspace`.`gold`.`fact_sales` f\n",
+    "JOIN `workspace`.`gold`.`dim_products` p ON f.`product_key` = p.`product_key`\n",
+    "WHERE f.`order_date` IS NOT NULL\n",
+    "  AND p.`product_name` IS NOT NULL\n",
+    "GROUP BY p.`product_name`, p.`category`, p.`subcategory`\n",
+    "ORDER BY total_revenue DESC\n",
+    "LIMIT 10\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "application/vnd.databricks.v1+notebook": {
+   "computePreferences": null,
+   "dashboards": [],
+   "environmentMetadata": {
+    "base_environment": "",
+    "environment_version": "5"
+   },
+   "inputWidgetPreferences": null,
+   "language": "python",
+   "notebookMetadata": {
+    "pythonIndentUnit": 4
+   },
+   "notebookName": "top_10_products.sql",
+   "widgets": {}
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
