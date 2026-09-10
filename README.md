@@ -154,7 +154,7 @@ Gold processing is managed through:
 
 ---
 
-# ⚡ Pipeline Orchestration
+# Pipeline Orchestration
 
 The complete data pipeline is automated using **Databricks Workflows**.
 
@@ -227,7 +227,7 @@ The **Mountain-200** product series was identified as one of the strongest reven
 
 ---
 
-# 🤖 Machine Learning
+# Machine Learning
 
 ## Customer Churn Prediction
 
@@ -280,7 +280,7 @@ This provides:
 
 ---
 
-# 🌸 Streamlit Churn Prediction App
+# Streamlit Churn Prediction App
 
 A Streamlit web application provides an interactive interface for customer churn prediction.
 
@@ -431,7 +431,7 @@ Bike_DataLakehouse_BigData_Project/
 
 ---
 
-# 🔄 End-to-End Workflow
+# End-to-End Workflow
 
 ```text
 ┌───────────────┐
