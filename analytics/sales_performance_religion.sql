@@ -1,0 +1,79 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 0,
+   "metadata": {
+    "application/vnd.databricks.v1+cell": {
+     "cellMetadata": {},
+     "inputWidgets": {},
+     "nuid": "287b2d4a-241b-4e9a-8b88-a295c5fa8a50",
+     "showTitle": false,
+     "tableResultSettingsMap": {},
+     "title": ""
+    }
+   },
+   "outputs": [],
+   "source": [
+    "%sql\n",
+    "\n",
+    "-- Sales by region and category, pre-sorted by total region revenue (highest to lowest)\n",
+    "WITH region_totals AS (\n",
+    "  SELECT \n",
+    "    c.`country` AS region,\n",
+    "    SUM(f.`sales_amount`) AS region_total_revenue\n",
+    "  FROM `workspace`.`gold`.`fact_sales` f\n",
+    "  JOIN `workspace`.`gold`.`dim_customers` c ON f.`customer_key` = c.`customer_key`\n",
+    "  WHERE f.`order_date` IS NOT NULL\n",
+    "    AND c.`country` IS NOT NULL\n",
+    "    AND c.`country` != 'n/a'\n",
+    "  GROUP BY c.`country`\n",
+    "),\n",
+    "region_category_sales AS (\n",
+    "  SELECT \n",
+    "    c.`country` AS region,\n",
+    "    p.`category`,\n",
+    "    SUM(f.`sales_amount`) AS total_revenue,\n",
+    "    rt.region_total_revenue\n",
+    "  FROM `workspace`.`gold`.`fact_sales` f\n",
+    "  JOIN `workspace`.`gold`.`dim_customers` c ON f.`customer_key` = c.`customer_key`\n",
+    "  JOIN `workspace`.`gold`.`dim_products` p ON f.`product_key` = p.`product_key`\n",
+    "  JOIN region_totals rt ON c.`country` = rt.region\n",
+    "  WHERE f.`order_date` IS NOT NULL\n",
+    "    AND c.`country` IS NOT NULL\n",
+    "    AND c.`country` != 'n/a'\n",
+    "    AND p.`category` IS NOT NULL\n",
+    "  GROUP BY c.`country`, p.`category`, rt.region_total_revenue\n",
+    ")\n",
+    "SELECT \n",
+    "  region,\n",
+    "  category,\n",
+    "  total_revenue\n",
+    "FROM region_category_sales\n",
+    "ORDER BY region_total_revenue DESC, region, category\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "application/vnd.databricks.v1+notebook": {
+   "computePreferences": null,
+   "dashboards": [],
+   "environmentMetadata": {
+    "base_environment": "",
+    "environment_version": "5"
+   },
+   "inputWidgetPreferences": null,
+   "language": "python",
+   "notebookMetadata": {
+    "pythonIndentUnit": 4
+   },
+   "notebookName": "New Notebook 2026-09-09 22:10:09",
+   "widgets": {}
+  },
+  "language_info": {
+   "name": "python"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
