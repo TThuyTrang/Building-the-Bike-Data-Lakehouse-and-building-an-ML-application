@@ -1,0 +1,6 @@
+streamlit
+mlflow
+pandas
+numpy
+scikit-learn
+pyspark
